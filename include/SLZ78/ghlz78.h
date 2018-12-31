@@ -11,7 +11,7 @@
 #include <stack>
 #include "./../tools.h"
 #include "map_D.h"
-#include "hash_D.h"
+// #include "hash_D.h"
 
 namespace cdslib {
 

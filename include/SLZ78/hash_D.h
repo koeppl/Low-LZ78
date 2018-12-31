@@ -6,7 +6,61 @@
 #ifndef CDSLIB_HASH_D_H
 #define CDSLIB_HASH_D_H
 
-#include "./hash_D_level.h"
+
+#include "tudocomp/util/compact_sparse_hash.hpp"
+#include <tudocomp/util/serialization.hpp>
+#include <sdsl/int_vector.hpp>
+
+
+class ShohinBonsai {
+    public:
+    typedef typename sdsl::int_vector<>::size_type  size_type;
+    typedef tdc::compact_sparse_hashmap::compact_sparse_hashmap_t<size_type> hashtable_type;
+
+    hashtable_type table;
+
+    ShohinBonsai() {}
+
+    ShohinBonsai(size_type M, size_type N) 
+        : table(0, tdc::bits_for(N))
+    { }
+
+    ShohinBonsai(size_type M) 
+        : table(0, tdc::bits_for(M))
+    { }
+    void swap(ShohinBonsai& o) {
+        std::swap(table, o.table);
+    }
+//TODO
+    void load(std::istream& is) {
+        table = tdc::serialize<hashtable_type>::read(is);
+    }
+//TODO
+    size_type serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
+        sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(v, name, sdsl::util::class_name(*this));
+
+        tdc::serialize<hashtable_type>::write(out, table);
+        size_type written_bytes = 0;
+        sdsl::structure_tree::add_size(child, written_bytes);
+        return written_bytes;
+    }
+
+    size_type getValue(size_type pos) {
+        return table[pos];
+    }
+
+    void setValue(size_type pos, size_type d) {
+        table[pos] = d;
+    }
+    size_type get_size() const {
+        return table.size();
+    }
+    bool is_full() {
+        return table.size() == table.table_size();
+    }
+
+};
+
 
 namespace cdslib {
 
@@ -17,21 +71,22 @@ namespace cdslib {
     private:
 
         sdsl::int_vector<> D0;                  //array containing collision information
-        cdslib::hash_D_level D1;                //sublayer displacement variables
+        ShohinBonsai D1;                //sublayer displacement variables
         std::map<size_type, size_type> mapSl;   // special cases that do not fit in D0 adn D1
         size_type max_d;        // upper bound value (not included) than can be stored into D0
 
     public:
 
         // Empty constructor
-        hash_D() { }
+        hash_D() {
+        }
 
         //t_d_bits must be smaller than 7, but we are only using value 3 
         hash_D(size_type M, double factor, size_type t_d_bits) {
             t_d_bits = 3;
             max_d = (1 << t_d_bits) - 1;
             D0 = sdsl::int_vector<>(M, 0, t_d_bits);
-            D1 = hash_D_level(M);
+            D1 = ShohinBonsai(M);
         }
 
         void
@@ -108,7 +163,7 @@ namespace cdslib {
                 if (D1.is_full()) {
                     size_type D_size = D0.size();
                     size_type d_value;
-                    cdslib::hash_D_level D2 = hash_D_level(D_size, 2 * D1.get_size());
+                    ShohinBonsai D2 = ShohinBonsai(D_size, 2 * D1.get_size());
                     for (size_type i = 0; i < D_size; ++i) {
                         d_value  = getValue(i);
                         if (d_value >= max_d and d_value <= 134) {
