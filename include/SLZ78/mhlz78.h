@@ -13,6 +13,7 @@
 #include "./../tools.h"
 #include "map_D.h"
 #include "hash_D.h"
+#include "hash_Bonsai.h"
 
 namespace cdslib {
 
@@ -107,7 +108,6 @@ namespace cdslib {
             H.push_back(new sdsl::int_vector<>(M[0], max_h[0], sdsl::bits::hi(max_h[0]) + 1));
             D.push_back(new D_type(M[0], factor, bits_D));
             load_limit = (size_type)(std::ceil(M[0] * (1.0 / (1.0 + factor))));
-            //std::cout << "load limit: " << load_limit << std::endl;
             max_level = 0;
             process_text(f_in, f_out);
             store_data_structure(f_out);

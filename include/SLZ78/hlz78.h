@@ -13,6 +13,7 @@
 #include "./../tools.h"
 #include "map_D.h"
 #include "hash_D.h"
+#include "hash_Bonsai.h"
 
 namespace cdslib {
 
@@ -153,9 +154,8 @@ namespace cdslib {
             max_h = parameters[6];
             bits_L =parameters[7];
             sdsl::int_vector<> B;
-            B.load(in); // load B
+            B.load(in); 
             load_vector_selection(H, B, max_h, in);
-            //H.load(in);//Load Hash
             D.load(in);//Load D
             alphabet.load(in); //Load map_alphabet
             delete [] parameters;
@@ -178,8 +178,8 @@ namespace cdslib {
             parameters[6] = max_h;
             parameters[7] = bits_L;
             SaveValue(out, parameters, 8);
+						size_of_struc += 8 * sizeof(size_type);
             sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(nullptr, "", sdsl::util::class_name(*this));
-            //new idea
             sdsl::int_vector<> B(M, 0, 1);
             size_type count = 0;
             for(size_type i = 0; i < M; ++i) {
@@ -188,14 +188,13 @@ namespace cdslib {
                     ++count;
                 }
             }
-            size_of_struc = B.serialize(out, child, "bitmap B"); //Save B
-            write_vector_selection(H, B, count, out);
-            //size_of_struc = H.serialize(out, child, "Hash"); //Save Hash
-            //std::cout << "H uses: " << size_of_struc << " bytes" << std::endl;
-            size_of_struc = D.serialize(out, child, "D Array"); //Save D
-            std::cout << "D uses: " << size_of_struc << " bytes" << std::endl;
-            alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet
-            std::cout << "coming back and finish" << std::endl;
+						size_of_struc +=  (H.size() * H.width() + 7) / 8; //space used by H
+            size_of_struc += B.serialize(out, child, "bitmap B"); //Save B
+            write_vector_selection(H, B, count, out); // Save values of H
+            size_of_struc += D.serialize(out, child, "D Array"); //Save D            
+            size_of_struc += alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet            
+						size_of_struc += 1048576;  //the buffer size (10 mb)
+						std::cout << "Ram used approx: " << size_of_struc << std::endl;
             out.seekp(0,std::ios::beg);
             SaveValue(out, start_position);
         }

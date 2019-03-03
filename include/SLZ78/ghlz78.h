@@ -11,7 +11,8 @@
 #include <stack>
 #include "./../tools.h"
 #include "map_D.h"
-// #include "hash_D.h"
+#include "hash_D.h"
+#include "hash_Bonsai.h"
 
 namespace cdslib {
 

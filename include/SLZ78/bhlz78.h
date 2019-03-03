@@ -11,7 +11,8 @@
 #include <stack>
 #include "./../tools.h"
 #include "map_D.h"
-// #include "hash_D.h"
+#include "hash_D.h"
+#include "hash_Bonsai.h"
 
 namespace cdslib {
 
@@ -116,7 +117,7 @@ namespace cdslib {
             std::cout << "len file: " << len_file << "  sigma+2: " << sigma << std::endl;
             std::cout << "M: " << M << "  P: " << P << std::endl;
             srand(time(NULL)); // initialize random seed
-            alpha = rand() % (P - 1) + 1; //random number in [1, P-1]
+            alpha = 121802;//rand() % (P - 1) + 1; //random number in [1, P-1]
             beta = mod_mul_inv(alpha, P);
             std::cout << "alpha: " << alpha << "  beta: " << beta << std::endl;
             max_h = (P + M) / M;
@@ -389,12 +390,14 @@ namespace cdslib {
             size_type M_prime = (size_type)std::min(MAX_M,  (size_type)(gf * M));
             std::cout << "M: "  << M << "  M_prime: " << M_prime << "  gf: " << gf << std::endl;
             bhlz78<t_width, D_type> new_ds(MAX_M, M_prime, sigma, alpha, bits_d, factor, bits_L, gf);
-            in.clear();
+						std::cout << "hola" << std::endl;
+						in.clear();
             in.seekg(0, in.beg); //make sure that we are at the start of the file
             out.clear();
             out.seekp(0, std::ios_base::beg);//make sure that the output is at the start again
             SaveValue(out, (int64_t) 0); //save space to store the start of the data structure
             this->swap(new_ds);
+						std::cout << "hola2" << std::endl;
         }
 
         //!Extracts the value path from h_pos to the root into the out file

@@ -22,6 +22,7 @@
 #include "./../include/SLZ78/mhlz78.h"
 #include "./../include/SLZ78/ghlz78.h"
 #include "./../include/SLZ78/ghlz78S.h"
+#include "./../include/SLZ78/ghlz78S2.h"
 
 
 using namespace std;
@@ -55,7 +56,8 @@ int main(int argc, char* argv[]) {
         cout << " 4 | GHLZ78 using maps for the displacements" << endl;
         cout << " 5 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
         cout << " 7 | BHLZ78 brute force hlz78 growing version" << endl;
-				cout << " 8 | GHLZ78 using a hash table and a sublayer for displacements and a sampled node array when growing" << endl;
+				cout << " 8 | GHLZ78(S) using a hash table and a sublayer for displacements and a sampled node array when growing" << endl;
+				cout << " 9 | GHLZ78(S)2 using a hash table and a sublayer for displacements and a sampled node array when growing" << endl;
         return 0;
     }
 
@@ -85,25 +87,28 @@ int main(int argc, char* argv[]) {
             decompress<cdslib::hlz78<> >(file, out_file);
             break;
         case 1:
-            decompress<cdslib::hlz78<8, cdslib::hash_D> >(file, out_file);
+            decompress<cdslib::hlz78<8, cdslib::hash_Bonsai> >(file, out_file);
             break;
         case 2:
             decompress<cdslib::mhlz78<> >(file, out_file);
             break;
         case 3:
-            decompress<cdslib::mhlz78<8, cdslib::hash_D> >(file, out_file);
+            decompress<cdslib::mhlz78<8, cdslib::hash_Bonsai> >(file, out_file);
             break;
         case 4:
             decompress<cdslib::ghlz78<> >(file, out_file);
             break;
         case 5:
-            decompress<cdslib::ghlz78<8, cdslib::hash_D> >(file, out_file);
+            decompress<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file);
             break;
         case 7:
-            decompress<cdslib::bhlz78<8, cdslib::hash_D> >(file, out_file);
+            decompress<cdslib::bhlz78<8, cdslib::hash_Bonsai> >(file, out_file);
             break;
 				case 8:
-						decompress<cdslib::ghlz78S<8, cdslib::hash_D> >(file, out_file);
+						decompress<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file);
+						break;
+				case 9:
+						decompress<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file);
 						break;
         default:
             cout << "index_type must be a value in [0,5]" << endl;

@@ -1,5 +1,7 @@
 //
 // Created by rcanovas on 02/12/18
+// Uses a table of size M when growing table to keep sample info (too much space) 
+//
 //
 
 #ifndef CDSLIB_GMHLZ78S_H
@@ -12,6 +14,7 @@
 #include "./../tools.h"
 #include "map_D.h"
 #include "hash_D.h"
+#include "hash_Bonsai.h"
 
 namespace cdslib {
 

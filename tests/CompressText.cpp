@@ -21,6 +21,7 @@
 #include "./../include/SLZ78/mhlz78.h"
 #include "./../include/SLZ78/ghlz78.h"
 #include "./../include/SLZ78/ghlz78S.h"
+#include "./../include/SLZ78/ghlz78S2.h"
 #include "./../include/SLZ78/bhlz78.h"
 #include "./../include/LZ78/lz78.h"
 
@@ -58,8 +59,9 @@ int main(int argc, char* argv[]) {
         cout << " 5 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
         cout << " 6 | LZ78 classic construction" << endl;
         cout << " 7 | BHZ78 Brute force growing HLZ78 construction" << endl;
-				cout << " 8 | GHLZ78 using a hash table and a sublayer for displacements and a Sampled node array when growing" << endl;
-       return 0;
+				cout << " 8 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
+				cout << " 9 | GHLZ78(S)2 using a hash table and a sublayer for displacements and a Sampled node array when growing" << endl;
+				return 0;
     }
 
     string file = argv[1];
@@ -93,9 +95,9 @@ int main(int argc, char* argv[]) {
             out_file += ".hlz78";
             compress_text<cdslib::hlz78<> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
-        case 1:
+        case 1:  //using Bonsai hash
             out_file += ".hlz78_hash";
-            compress_text<cdslib::hlz78<8, cdslib::hash_D> >(file, out_file, factor, sigma, d_bits, grow_factor);
+            compress_text<cdslib::hlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 2:
             out_file += ".mhlz78";
@@ -103,7 +105,7 @@ int main(int argc, char* argv[]) {
             break;
         case 3:
             out_file += ".mhlz78_hash";
-            compress_text<cdslib::mhlz78<8, cdslib::hash_D> >(file, out_file, factor, sigma, d_bits, grow_factor);
+            compress_text<cdslib::mhlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 4:
             out_file += ".ghlz78";
@@ -111,7 +113,7 @@ int main(int argc, char* argv[]) {
             break;
         case 5:
             out_file += ".ghlz78_hash";
-            compress_text<cdslib::ghlz78<8, cdslib::hash_D> >(file, out_file, factor, sigma, d_bits, grow_factor);
+            compress_text<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 6:
             out_file += ".lz78";
@@ -119,11 +121,15 @@ int main(int argc, char* argv[]) {
             break;
         case 7:
             out_file += ".bhlz78";
-            compress_text<cdslib::bhlz78<8, cdslib::hash_D>>(file, out_file, factor, sigma, d_bits, grow_factor);
+            compress_text<cdslib::bhlz78<8, cdslib::hash_Bonsai>>(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
 				case 8:
-						out_file += ".ghlz78S_hash";
-						compress_text<cdslib::ghlz78S<8, cdslib::hash_D> >(file, out_file, factor, sigma, d_bits, grow_factor);
+						out_file += ".ghlz78_hash";
+						compress_text<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
+						break;
+				case 9:
+						out_file += ".ghlz78S2_hash";
+						compress_text<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
 						break;
         default:
             cout << "index_type must be a value in [0,8]" << endl;
