@@ -6,6 +6,7 @@
 #ifndef CDSLIB_HASH_B_H
 #define CDSLIB_HASH_B_H
 
+#include "./hash_D_level.h"
 
 #include <tudocomp/util/heap_size.hpp>
 #include <tudocomp/util/compact_hash/map/typedefs.hpp>
@@ -33,34 +34,53 @@ class SeparateChainingTable {
 
 		//TODO
     void load(std::istream& is) {
+        // return load_naive(is);
+        m_table.deserialize(is);
+    }
+    void load_naive(std::istream& is) {
         size_t elements;
-        is >> elements;
+        is.read(reinterpret_cast<char*>(&elements), sizeof(size_t));
         for(size_t i = 0; i < elements; ++i) {
             hashtable_type::key_type key;
             hashtable_type::value_type value;
-            is >> key;
-            is >> value;
+            is.read(reinterpret_cast<char*>(&key), sizeof(hashtable_type::key_type));
+            is.read(reinterpret_cast<char*>(&value), sizeof(hashtable_type::value_type));
             m_table[key] = value;
         }
     }
-
-    size_type serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
+    size_type serialize_naive(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
         const size_t elements = m_table.size();
         size_t counter = 0;
-        out << elements;
+        out.write(reinterpret_cast<const char*>(&elements), sizeof(size_t));
+
         for(auto it = m_table.cbegin_nav(); it != m_table.cend_nav(); ++it) {
-            out << it.key();
-            out << it.value();
+            hashtable_type::key_type key = it.key();
+            hashtable_type::value_type value = it.value();
+            out.write(reinterpret_cast<const char*>(&key), sizeof(hashtable_type::key_type));
+            out.write(reinterpret_cast<const char*>(&value), sizeof(hashtable_type::value_type));
             ++counter;
         }
         DCHECK_EQ(counter, elements);
-        sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(v, name, sdsl::util::class_name(*this));
         const size_type written_bytes = sizeof(size_t) + elements* (sizeof(hashtable_type::key_type) + sizeof(hashtable_type::value_type));
+
+        sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(v, name, sdsl::util::class_name(*this));
+        sdsl::structure_tree::add_size(child, written_bytes );
+        return written_bytes;
+    }
+
+    size_type serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
+        // return serialize_naive(out, v, name);
+        const auto streamposition = out.tellp();
+        m_table.serialize(out);
+        const size_type written_bytes = out.tellp() - streamposition;
+
+        sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(v, name, sdsl::util::class_name(*this));
         sdsl::structure_tree::add_size(child, written_bytes );
         return written_bytes;
     }
 
     size_type getValue(size_type pos) {
+        DCHECK_LE(tdc::bits_for(pos), m_table.key_bit_width()); //such a value must not have been hashed!
         return m_table[pos];
     }
 
@@ -146,7 +166,6 @@ class BonsaiTable {
 
 
 namespace cdslib {
-
     class hash_Bonsai {
     public:
         typedef typename sdsl::int_vector<>::size_type  size_type;
@@ -154,22 +173,27 @@ namespace cdslib {
     private:
 
         sdsl::int_vector<> D0;                  //array containing collision information
-        SeparateChainingTable D1;                //sublayer displacement variables
+#ifndef NDEBUG
+        cdslib::hash_D_level D1;                //sublayer displacement variables
+#endif
+        SeparateChainingTable D4;
         std::map<size_type, size_type> mapSl;   // special cases that do not fit in D0 adn D1
         size_type max_d;        // upper bound value (not included) than can be stored into D0
 
     public:
 
         // Empty constructor
-        hash_Bonsai() {
-        }
+        hash_Bonsai() { }
 
         //t_d_bits must be smaller than 7, but we are only using value 3 
         hash_Bonsai(size_type M, double factor, size_type t_d_bits) {
             t_d_bits = 3;
             max_d = (1 << t_d_bits) - 1;
             D0 = sdsl::int_vector<>(M, 0, t_d_bits);
-            D1 = SeparateChainingTable(2);
+#ifndef NDEBUG
+            D1 = hash_D_level(M);
+#endif
+            D4 = SeparateChainingTable(t_d_bits); //TODO: parameter = maximal number of bits a key can have. Is this t_d_bits??
         }
 
         void
@@ -177,10 +201,14 @@ namespace cdslib {
             if (this != &hd) {
                 D0.swap(hd.D0);
                 std::swap(max_d, hd.max_d);
+#ifndef NDEBUG
                 D1.swap(hd.D1);
+#endif
+                D4.swap(hd.D4);
                 mapSl.swap(hd.mapSl);
             }
         }
+
 
         size_type
         serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
@@ -188,9 +216,13 @@ namespace cdslib {
             size_type written_bytes = 0, e_bytes = 0;
             written_bytes += write_member(max_d, out, child, "maximum value in D");
             written_bytes += D0.serialize(out, child, "D array");
+#ifndef NDEBUG
             e_bytes += D1.serialize(out, child, "D1 array");
+#endif
+            e_bytes += D4.serialize(out, child, "D4 array");
             { //save map
                 size_type length_map = mapSl.size(), cont = 0;
+                //std::cout << "number of special cases: " << length_map << std::endl;
                 sdsl::int_vector<> elements(length_map, 0, 8 * sizeof(size_type));
                 for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
                     elements[cont] = it->first;
@@ -213,7 +245,10 @@ namespace cdslib {
         load(std::istream& in) {
             sdsl::read_member(max_d, in);
             D0.load(in);
+#ifndef NDEBUG
             D1.load(in);
+#endif
+            D4.load(in);
             sdsl::int_vector<> keys;
             sdsl::int_vector<> values;
             keys.load(in);
@@ -231,8 +266,12 @@ namespace cdslib {
                 auto it = mapSl.find(pos);
                 if (it != mapSl.end())  //d value was over 135
                     return it->second;
-                else //it is in D1
-                    return D1.getValue(pos) + max_d;
+                else {//it is in D1
+#ifndef NDEBUG
+                    DCHECK_EQ(D1.getValue(pos), D4.getValue(pos));
+#endif
+                    return D4.getValue(pos) + max_d;
+                    }
             }
         }
 
@@ -241,33 +280,39 @@ namespace cdslib {
             if (d < max_d)
                 D0[pos] = d;
             else {
-                // if (D1.is_full()) {
-                //     size_type D_size = D0.size();
-                //     size_type d_value;
-                //     BonsaiTable D2 = BonsaiTable(D_size, 2 * D1.get_size());
-                //     for (size_type i = 0; i < D_size; ++i) {
-                //         d_value  = getValue(i);
-                //         if (d_value >= max_d and d_value <= 134) {
-                //             D2.setValue(i, d_value - max_d);
-                //         }
-                //     }
-                //     D1.swap(D2);
-                // }
+#ifndef NDEBUG
+                if (D1.is_full()) {
+                    size_type D_size = D0.size();
+                    size_type d_value;
+                    cdslib::hash_D_level D2 = hash_D_level(D_size, 2 * D1.get_size());
+                    for (size_type i = 0; i < D_size; ++i) {
+                        d_value  = getValue(i);
+                        if (d_value >= max_d and d_value <= 134) {
+                            D2.setValue(i, d_value - max_d);
+                        }
+                    }
+                    D1.swap(D2);
+                }
+#endif
                 D0[pos] = max_d;
                 if (d > 134) //from the original implementation (7 bits for this level)
                     mapSl[pos] = d;
-                else
+                else {
+#ifndef NDEBUG 
                     D1.setValue(pos, d - max_d);
+#endif
+                    D4.setValue(pos, d - max_d);
+                }
             }
         }
-
-    private:
-
 
     };
 
 
-}
+
+
+
+}//ns
 
 
 
