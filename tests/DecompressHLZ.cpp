@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
             decompress<cdslib::bhlz78<8, cdslib::hash_Bonsai> >(file, out_file);
             break;
 				case 8:
-						decompress<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file);
+						decompress<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file);
 						break;
 				case 9:
 						decompress<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file);

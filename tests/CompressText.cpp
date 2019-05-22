@@ -124,8 +124,8 @@ int main(int argc, char* argv[]) {
             compress_text<cdslib::bhlz78<8, cdslib::hash_Bonsai>>(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
 				case 8:
-						out_file += ".ghlz78_hash";
-						compress_text<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
+						out_file += ".ghlz78S2_hash";
+						compress_text<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
 						break;
 				case 9:
 						out_file += ".ghlz78S2_hash";

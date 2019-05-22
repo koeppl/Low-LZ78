@@ -47,6 +47,14 @@ namespace cdslib {
             }
         }
 
+				size_type 
+				size_in_bytes() {
+					size_type mem = sdsl::size_in_bytes(D);
+					size_type length_map = E.size();
+					mem += length_map * (sizeof(size_type) * 2 + 24);
+					return mem;
+				}
+
 
         size_type
         serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {

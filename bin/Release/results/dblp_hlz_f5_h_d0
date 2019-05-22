@@ -1,0 +1,22 @@
+1
+Compress
+len file: 296135874  sigma+2: 99
+M: 72923657  P: 7219442051
+alpha: 2133014558  beta: 3125061608
+max_h : 100  bits_h: 7
+bits D0: 3
+alphabet_size: 97
+number of phrases: 16205171
+number of collisions: 1766714
+Finish storing L at:54692464
+H uses: 63808209 bytes
+number of special cases: 0
+D uses: 27346411 bytes
+coming back and finish
+35.66
+-rw-rw-r-- 1 rcanovas rcanovas 154706914 déc.  28 23:16 /home/rcanovas/Desktop/hlz_data/dblp.xml.hlz78_hash
+Decompress
+finish loading
+33.80
+-rw-rw-r-- 1 rcanovas rcanovas 296135874 déc.  28 23:17 tmp_file
+ 

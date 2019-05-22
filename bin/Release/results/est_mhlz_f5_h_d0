@@ -1,0 +1,78 @@
+1
+Compress
+len file: 4646397473  sigma+2: 56
+M: 71572  P: 4008077
+alpha: 1743494  beta: 2107350
+max_h : 57  bits_h: 6
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+number of levels: 14
+alphabet_size: 54
+number of phrases: 301594140
+number of collisions: 129398231
+number of levels: 14
+Finish storing L at:1130978040
+number of special cases: 889
+number of special cases: 942
+number of special cases: 1721
+number of special cases: 3707
+number of special cases: 7493
+number of special cases: 14007
+number of special cases: 29467
+number of special cases: 61353
+number of special cases: 115945
+number of special cases: 234962
+number of special cases: 470007
+number of special cases: 943303
+number of special cases: 1894890
+number of special cases: 0
+total length H: 586317824
+H: 513019294 bytes
+D: 280328658 bytes
+total size H: 586317824
+16096.20
+-rw-rw-r-- 1 rcanovas rcanovas 2035629229 janv.  2 13:13 /home/rcanovas/Desktop/hlz_data/est.fa.mhlz78_hash
+Decompress
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+4417.53
+-rw-rw-r-- 1 rcanovas rcanovas 4646397473 janv.  2 14:26 tmp_file
+ 

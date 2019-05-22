@@ -1,0 +1,64 @@
+1
+Compress
+len file: 1184051855  sigma+2: 29
+M: 37851  P: 1097699
+alpha: 502966  beta: 363603
+max_h : 30  bits_h: 5
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+number of levels: 14
+alphabet_size: 27
+number of phrases: 147482019
+number of collisions: 63871051
+number of levels: 14
+Finish storing L at:516187080
+number of special cases: 3320
+Space used by special cases: 53138 bytes
+number of special cases: 3410
+Space used by special cases: 54578 bytes
+number of special cases: 6724
+Space used by special cases: 107602 bytes
+number of special cases: 13731
+Space used by special cases: 219714 bytes
+number of special cases: 27261
+Space used by special cases: 436194 bytes
+number of special cases: 55592
+Space used by special cases: 889490 bytes
+number of special cases: 110368
+Space used by special cases: 1765906 bytes
+number of special cases: 218571
+Space used by special cases: 3497154 bytes
+number of special cases: 436286
+Space used by special cases: 6980594 bytes
+number of special cases: 884970
+Space used by special cases: 14159538 bytes
+number of special cases: 1764656
+Space used by special cases: 28234514 bytes
+number of special cases: 3529846
+Space used by special cases: 56477554 bytes
+number of special cases: 7184311
+Space used by special cases: 114948994 bytes
+number of special cases: 0
+Space used by special cases: 18 bytes
+total length H: 205468275
+H: 160400462 bytes
+D: 330559386 bytes
+total size H: 205468275
+1056.40
+-rw-rw-r-- 1 rcanovas rcanovas 1007147465 déc.  29 01:05 /home/rcanovas/Desktop/hlz_data/proteins.mhlz78
+Decompress
+230.08
+-rw-rw-r-- 1 rcanovas rcanovas 1184051855 déc.  29 01:09 tmp_file
+ 

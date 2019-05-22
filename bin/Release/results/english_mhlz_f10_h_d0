@@ -1,0 +1,73 @@
+1
+Compress
+len file: 1073741824  sigma+2: 239
+M: 36044  P: 8614517
+alpha: 5230056  beta: 8160774
+max_h : 240  bits_h: 8
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+number of levels: 13
+alphabet_size: 237
+number of phrases: 96986744
+number of collisions: 36183390
+number of levels: 13
+Finish storing L at:351576960
+number of special cases: 147
+number of special cases: 149
+number of special cases: 328
+number of special cases: 583
+number of special cases: 1110
+number of special cases: 2205
+number of special cases: 4644
+number of special cases: 9151
+number of special cases: 18862
+number of special cases: 37711
+number of special cases: 73867
+number of special cases: 146330
+number of special cases: 0
+total length H: 147636224
+H: 166086381 bytes
+D: 60085455 bytes
+total size H: 147636224
+1390.61
+-rw-rw-r-- 1 rcanovas rcanovas 604656314 déc.  29 10:11 /home/rcanovas/Desktop/hlz_data/english.1024MB.mhlz78_hash
+Decompress
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+922.22
+-rw-rw-r-- 1 rcanovas rcanovas 1073741824 déc.  29 10:26 tmp_file
+ 

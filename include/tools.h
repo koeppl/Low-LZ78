@@ -248,7 +248,7 @@ namespace cdslib {
             SaveValue(out, buffer, (pos_buffer + 63) / 64);
         std::cout << "Space used by sel. values: " << 8 * ((n * bpv + 63) / 64) << " bytes" << std::endl;
         delete [] buffer;
-        return 8 * ((n * bpv + 63) / 64);
+        return 8 * ((n * bpv + 63) / 64); //need to check this
     }
 
     void

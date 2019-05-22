@@ -1,0 +1,22 @@
+1
+Compress
+len file: 1073741824  sigma+2: 239
+M: 296466574  P: 70855511201
+alpha: 1435002884  beta: 7411566330
+max_h : 240  bits_h: 8
+bits D0: 3
+alphabet_size: 237
+number of phrases: 96986744
+number of collisions: 15921911
+Finish storing L at:351576960
+H uses: 296466585 bytes
+number of special cases: 0
+D uses: 111175003 bytes
+coming back and finish
+218.53
+-rw-rw-r-- 1 rcanovas rcanovas 795236914 déc.  29 06:47 /home/rcanovas/Desktop/hlz_data/english.1024MB.hlz78_hash
+Decompress
+finish loading
+503.65
+-rw-rw-r-- 1 rcanovas rcanovas 1073741824 déc.  29 06:56 tmp_file
+ 

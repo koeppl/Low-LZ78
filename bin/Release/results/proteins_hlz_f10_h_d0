@@ -1,0 +1,22 @@
+1
+Compress
+len file: 1184051855  sigma+2: 29
+M: 205468274  P: 5958579947
+alpha: 1406766223  beta: 2806627416
+max_h : 30  bits_h: 5
+bits D0: 3
+alphabet_size: 27
+number of phrases: 147482019
+number of collisions: 50758673
+Finish storing L at:516187080
+H uses: 128417681 bytes
+number of special cases: 31
+D uses: 77051139 bytes
+coming back and finish
+158.66
+-rw-rw-r-- 1 rcanovas rcanovas 746618610 déc.  29 00:02 /home/rcanovas/Desktop/hlz_data/proteins.hlz78_hash
+Decompress
+finish loading
+176.26
+-rw-rw-r-- 1 rcanovas rcanovas 1184051855 déc.  29 00:05 tmp_file
+ 

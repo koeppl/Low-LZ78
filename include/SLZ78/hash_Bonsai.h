@@ -209,6 +209,18 @@ namespace cdslib {
             }
         }
 
+				size_type size_in_bytes() {
+					size_type mem = sdsl::size_in_bytes(D0);
+					{
+						std::ofstream f_tmp("temp_bonsai_ram_data");
+						size_type d4 = D4.serialize(f_tmp);
+						mem += d4;
+						remove("temp_bonsai_ram_data");
+					}
+					size_type length_map = mapSl.size();
+					mem += length_map * (sizeof(size_type) * 2 + 24); //lenght_map (key-values + 3 pointers)
+					return mem;
+				}
 
         size_type
         serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
@@ -219,23 +231,30 @@ namespace cdslib {
 #ifndef NDEBUG
             e_bytes += D1.serialize(out, child, "D1 array");
 #endif
-            e_bytes += D4.serialize(out, child, "D4 array");
-            { //save map
-                size_type length_map = mapSl.size(), cont = 0;
-                //std::cout << "number of special cases: " << length_map << std::endl;
-                sdsl::int_vector<> elements(length_map, 0, 8 * sizeof(size_type));
-                for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
-                    elements[cont] = it->first;
-                    cont ++;
-                }
-                e_bytes += elements.serialize(out, child, "map keys");
-                cont = 0;
-                for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
-                    elements[cont] = it->second;
-                    cont ++;
-                }
-                e_bytes += elements.serialize(out, child, "map values");
-            }
+            size_type d4_size = D4.serialize(out, child, "D4 array");
+						std::cout << "D4 size: " << d4_size << std::endl;
+            e_bytes += d4_size;
+						{ //save map
+							size_type map_size = 0;
+							size_type length_map = mapSl.size(), cont = 0;
+							//std::cout << "number of special cases: " << length_map << std::endl;
+							sdsl::int_vector<> elements(length_map, 0, 8 * sizeof(size_type));
+							for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
+								elements[cont] = it->first;
+								cont ++;
+							}
+							map_size += elements.serialize(out, child, "map keys");
+							cont = 0;
+							for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
+								elements[cont] = it->second;
+								cont ++;
+							}
+							map_size += elements.serialize(out, child, "map values");
+							//extra space used by the map (assuming that it uses a redblack tree ds--> 2 pointers (8bytes pp) + 1 pointer to the parent)
+							//3*8*number of elements in the map
+							map_size += 24 *  mapSl.size();
+							e_bytes += map_size;
+						}
             written_bytes += e_bytes;
             sdsl::structure_tree::add_size(child, written_bytes);
             return written_bytes;

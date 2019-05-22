@@ -1,0 +1,77 @@
+1
+Compress
+len file: 1184051855  sigma+2: 29
+M: 37851  P: 1097699
+alpha: 1023605  beta: 305588
+max_h : 30  bits_h: 5
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+number of levels: 14
+alphabet_size: 27
+number of phrases: 147482019
+number of collisions: 64012896
+number of levels: 14
+Finish storing L at:516187080
+number of special cases: 105
+number of special cases: 111
+number of special cases: 334
+number of special cases: 579
+number of special cases: 1076
+number of special cases: 2393
+number of special cases: 4492
+number of special cases: 9290
+number of special cases: 18446
+number of special cases: 37440
+number of special cases: 76058
+number of special cases: 149524
+number of special cases: 298800
+number of special cases: 0
+total length H: 205468275
+H: 160400462 bytes
+D: 86629506 bytes
+total size H: 205468275
+4419.51
+-rw-rw-r-- 1 rcanovas rcanovas 807018120 déc.  29 05:51 /home/rcanovas/Desktop/hlz_data/proteins.mhlz78_hash
+Decompress
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+1153.77
+-rw-rw-r-- 1 rcanovas rcanovas 1184051855 déc.  29 06:10 tmp_file
+ 

@@ -54,13 +54,14 @@ namespace cdslib {
         std::string out_file_name;
         size_type number_of_collisions;
         size_type max_length;
+				size_type MAX_RAM;
 
     public:
 
         // Empty constructor
         ghlz78S2() {
             M = P = alpha = beta = sigma = 0;
-            number_of_phrases = max_h = max_length = 0;
+            number_of_phrases = max_h = max_length = MAX_RAM = 0;
             load_limit = cell_used = 0;
         }
 
@@ -265,6 +266,18 @@ namespace cdslib {
             D.load(in);//Load D
             alphabet.load(in); //Load map_alphabet
             delete[] parameters;
+
+						//report ram
+						size_type size_of_struc = 8 * sizeof(size_type); //parameters
+						size_of_struc += sdsl::size_in_bytes(B); //B
+						std::cout << "B: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(H); // H
+						std::cout << "B+H: " << size_of_struc << std::endl;
+						size_of_struc += D.size_in_bytes(); //sdsl::size_in_bytes(D); //D      
+						std::cout << "B+H+D: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(alphabet); //map_alphabet            
+						size_of_struc += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						std::cout << "FINAL: Decompression Ram used approx: " << size_of_struc <<  " bytes" << std::endl;
         }
 
     private:
@@ -321,12 +334,21 @@ namespace cdslib {
                     ++count;
                 }
             }
-            size_of_struc = B.serialize(out, child, "bitmap B"); //Save B
-            write_vector_selection(H, B, count, out);
 
-            size_of_struc = D.serialize(out, child, "D Array"); //Save D
-            std::cout << "D uses: " << size_of_struc << " bytes" << std::endl;
-            alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet
+						size_of_struc += 8 * sizeof(size_type); //parameters
+						size_of_struc += B.serialize(out, child, "bitmap B"); //Save B
+						std::cout << "B: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(H); // H
+						std::cout << "B+H: " << size_of_struc << std::endl;
+						write_vector_selection(H, B, count, out);
+						size_of_struc += D.serialize(out, child, "D Array"); //Save D                                                           
+						std::cout << "B+H+D: " << size_of_struc << std::endl;
+						size_of_struc += alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet                                                    
+						size_of_struc += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						MAX_RAM = (size_type)std::max(MAX_RAM, size_of_struc);
+						std::cout << "Ram used when storing: " << size_of_struc <<  " bytes" << std::endl;
+						std::cout << "FINAL RAM USAGE: " << MAX_RAM <<  " bytes" << std::endl;
+
             out.seekp(0, std::ios::beg);
             SaveValue(out, start_position);
         }
@@ -465,10 +487,11 @@ namespace cdslib {
 						std::cout << "new ds " << ram_new_ds << "  bytes" << std::endl;
 						size_type ram_w = sdsl::size_in_bytes(W);
 						std::cout << "number of samples: " << W_values.size() << std::endl;
-						ram_w += (2 * sizeof(size_type)) * W_values.size() + sizeof(std::map<size_type, size_type>);  //(size of map aprox)
+						ram_w += (2 * sizeof(size_type) + 24 /*assuming a RB tree ds with 3 pointers*/) * W_values.size() + sizeof(std::map<size_type, size_type>);  //(size of map aprox)
 						std::cout << "size of map: " << sizeof(std::map<size_type,size_type>) << std::endl;
 						std::cout << "W " << ram_w << "  bytes" << std::endl;
 						size_type ram = ram_old_ds + ram_new_ds + ram_w;
+						MAX_RAM = ram;
             std::cout << "RAM USED: " << ram << "  bytes" << std::endl;
             this->swap(new_ds);
         }
@@ -539,7 +562,7 @@ namespace cdslib {
             size_type mem = 0;
             mem += 8 * sizeof(size_type); //parameters
             mem += sdsl::size_in_bytes(H);
-            mem += sdsl::size_in_bytes(D);
+            mem += D.size_in_bytes(); // sdsl::size_in_bytes(D);
             mem += sdsl::size_in_bytes(alphabet);
             //still missing few things, but should not greatly change the
             // final size for big files

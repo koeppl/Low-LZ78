@@ -1,0 +1,64 @@
+1
+Compress
+len file: 4646397473  sigma+2: 56
+M: 71572  P: 4008077
+alpha: 23847  beta: 3528728
+max_h : 57  bits_h: 6
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+max_d: 20  bits D: 5
+number of levels: 14
+alphabet_size: 54
+number of phrases: 301594140
+number of collisions: 132919719
+number of levels: 14
+Finish storing L at:1130978040
+number of special cases: 5023
+Space used by special cases: 80386 bytes
+number of special cases: 5203
+Space used by special cases: 83266 bytes
+number of special cases: 10346
+Space used by special cases: 165554 bytes
+number of special cases: 20357
+Space used by special cases: 325730 bytes
+number of special cases: 40746
+Space used by special cases: 651954 bytes
+number of special cases: 81696
+Space used by special cases: 1307154 bytes
+number of special cases: 163744
+Space used by special cases: 2619922 bytes
+number of special cases: 335300
+Space used by special cases: 5364818 bytes
+number of special cases: 2626246
+Space used by special cases: 42019954 bytes
+number of special cases: 1315807
+Space used by special cases: 21052930 bytes
+number of special cases: 2648369
+Space used by special cases: 42373922 bytes
+number of special cases: 5319576
+Space used by special cases: 85113234 bytes
+number of special cases: 10646590
+Space used by special cases: 170345458 bytes
+number of special cases: 0
+Space used by special cases: 18 bytes
+total length H: 586317824
+H: 513019294 bytes
+D: 737953202 bytes
+total size H: 586317824
+5649.04
+-rw-rw-r-- 1 rcanovas rcanovas 2381951097 janv.  2 07:34 /home/rcanovas/Desktop/hlz_data/est.fa.mhlz78
+Decompress
+913.02
+-rw-rw-r-- 1 rcanovas rcanovas 4646397473 janv.  2 07:50 tmp_file
+ 

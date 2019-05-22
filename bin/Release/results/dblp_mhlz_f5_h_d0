@@ -1,0 +1,74 @@
+1
+Compress
+len file: 296135874  sigma+2: 99
+M: 18068  P: 1788739
+alpha: 1476815  beta: 883709
+max_h : 100  bits_h: 7
+bits D0: 3
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+Needed another D1 level
+Needed another D1 level
+bits D0: 3
+number of levels: 11
+alphabet_size: 97
+number of phrases: 16205171
+number of collisions: 7115769
+number of levels: 11
+Finish storing L at:54692464
+number of special cases: 247
+number of special cases: 305
+number of special cases: 457
+number of special cases: 1252
+number of special cases: 1786
+number of special cases: 3924
+number of special cases: 8195
+number of special cases: 16258
+number of special cases: 33690
+number of special cases: 67540
+number of special cases: 414
+total length H: 18501632
+H: 18499483 bytes
+D: 9083593 bytes
+total size H: 18501632
+495.82
+-rw-rw-r-- 1 rcanovas rcanovas 86771979 déc.  28 23:33 /home/rcanovas/Desktop/hlz_data/dblp.xml.mhlz78_hash
+Decompress
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+finish loading
+213.86
+-rw-rw-r-- 1 rcanovas rcanovas 296135874 déc.  28 23:36 tmp_file
+ 

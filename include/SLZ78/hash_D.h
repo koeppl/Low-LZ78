@@ -44,6 +44,14 @@ namespace cdslib {
             }
         }
 
+				size_type size_in_bytes() {
+					size_type mem = sdsl::size_in_bytes(D0);
+					mem += sdsl::size_in_bytes(D1);
+					size_type length_map = mapSl.size();
+					mem += length_map * (sizeof(size_type) * 2 + 24); //lenght_map (key-values + 3 pointers)
+					return mem;
+				}
+
 
         size_type
         serialize(std::ostream& out, sdsl::structure_tree_node* v=nullptr, std::string name="") const {
@@ -53,20 +61,25 @@ namespace cdslib {
             written_bytes += D0.serialize(out, child, "D array");
             e_bytes += D1.serialize(out, child, "D1 array");
             { //save map
-                size_type length_map = mapSl.size(), cont = 0;
-                //std::cout << "number of special cases: " << length_map << std::endl;
-                sdsl::int_vector<> elements(length_map, 0, 8 * sizeof(size_type));
-                for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
-                    elements[cont] = it->first;
-                    cont ++;
-                }
-                e_bytes += elements.serialize(out, child, "map keys");
+							size_type map_size = 0;
+							size_type length_map = mapSl.size(), cont = 0;
+							//std::cout << "number of special cases: " << length_map << std::endl;
+							sdsl::int_vector<> elements(length_map, 0, 8 * sizeof(size_type));
+							for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
+								elements[cont] = it->first;
+								cont ++;
+							}
+              map_size += elements.serialize(out, child, "map keys");
                 cont = 0;
                 for(auto it = mapSl.begin(); it != mapSl.end(); it++) {
                     elements[cont] = it->second;
                     cont ++;
                 }
-                e_bytes += elements.serialize(out, child, "map values");
+                map_size += elements.serialize(out, child, "map values");
+								//extra space used by the map (assuming that it uses a redblack tree ds--> 2 pointers (8bytes pp) + 1 pointer to the parent)
+								//3*8*number of elements in the map
+								map_size += 24 *  mapSl.size();
+								e_bytes += map_size;
             }
             written_bytes += e_bytes;
             sdsl::structure_tree::add_size(child, written_bytes);

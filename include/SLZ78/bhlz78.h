@@ -255,16 +255,25 @@ namespace cdslib {
             sigma = parameters[5];
             max_h = parameters[6];
             bits_L = parameters[7];
-
             sdsl::int_vector<> B;
             B.load(in); // load B
             load_vector_selection(H, B, max_h, in);
-
-            //H.load(in);//Load Hash
-            std::cout << "H size: " << H.size() << "  first: " << H[0] << "  last: " << H[H.size() - 1] << std::endl;
+            //std::cout << "H size: " << H.size() << "  first: " << H[0] << "  last: " << H[H.size() - 1] << std::endl;
             D.load(in);//Load D
             alphabet.load(in); //Load map_alphabet
-            delete[] parameters;
+            
+						size_type size_of_struc = 8 * sizeof(size_type); //parameters
+						//size_of_struc +=  (H.size() * H.width() + 7) / 8; //space used by H
+						size_of_struc += sdsl::size_in_bytes(B); //B
+						std::cout << "B: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(H); // H
+						std::cout << "B+H: " << size_of_struc << std::endl;
+						size_of_struc +=  D.size_in_bytes();   //sdsl::size_in_bytes(D); //D       
+						std::cout << "B+H+D: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(alphabet); //map_alphabet            
+						size_of_struc += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						std::cout << "FINAL: Decompression Ram used approx: " << size_of_struc <<  " bytes" << std::endl;						
+						delete[] parameters;
         }
 
     private:
@@ -310,7 +319,6 @@ namespace cdslib {
             SaveValue(out, parameters, 8);
             sdsl::structure_tree_node *child = sdsl::structure_tree::add_child(nullptr, "",
                                                                                sdsl::util::class_name(*this));
-            //new idea
             sdsl::int_vector<> B(M, 0, 1);
             size_type count = 0;
             for(size_type i = 0; i < M; ++i) {
@@ -319,13 +327,19 @@ namespace cdslib {
                     ++count;
                 }
             }
-            size_of_struc = B.serialize(out, child, "bitmap B"); //Save B
+						size_of_struc += 8 * sizeof(size_type); //parameters
+            size_of_struc += B.serialize(out, child, "bitmap B"); //Save B
+						std::cout << "B: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(H); // H
+						std::cout << "B+H: " << size_of_struc << std::endl;
             write_vector_selection(H, B, count, out);
-            size_of_struc = D.serialize(out, child, "D Array"); //Save D
-            std::cout << "D uses: " << size_of_struc << " bytes" << std::endl;
-            alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet
-            std::cout << "coming back and finish" << std::endl;
-            out.seekp(0, std::ios::beg);
+            size_of_struc += D.serialize(out, child, "D Array"); //Save D
+						std::cout << "B+H+D: " << size_of_struc << std::endl;
+            //std::cout << "D uses: " << size_of_struc << " bytes" << std::endl;
+						size_of_struc += alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet 
+						size_of_struc += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						std::cout << "FINAL: Compression Ram used approx: " << size_of_struc <<  " bytes" << std::endl;
+						out.seekp(0, std::ios::beg);
             SaveValue(out, start_position);
         }
 
@@ -389,15 +403,20 @@ namespace cdslib {
             delete [] buffer;
             size_type M_prime = (size_type)std::min(MAX_M,  (size_type)(gf * M));
             std::cout << "M: "  << M << "  M_prime: " << M_prime << "  gf: " << gf << std::endl;
-            bhlz78<t_width, D_type> new_ds(MAX_M, M_prime, sigma, alpha, bits_d, factor, bits_L, gf);
-						std::cout << "hola" << std::endl;
+						//size_type maM = MAX_M, s = sigma, a = alpha, bd = bits_d, f = factor, bL = bits_L;
+						//double ggf = gf;
+						//{TODO: free memory from RAM (swap with empty data)
+							//bhlz78<t_width, D_type> empty_ds();
+							//this->swap(empty_ds);		//all ds must have an empty constructor			
+						//}
+						//bhlz78<t_width, D_type> new_ds(maM, M_prime, s, a, bd, f, bL, ggf);
+						bhlz78<t_width, D_type> new_ds(MAX_M, M_prime, sigma, alpha, bits_d, factor, bits_L, gf);
 						in.clear();
             in.seekg(0, in.beg); //make sure that we are at the start of the file
             out.clear();
             out.seekp(0, std::ios_base::beg);//make sure that the output is at the start again
             SaveValue(out, (int64_t) 0); //save space to store the start of the data structure
             this->swap(new_ds);
-						std::cout << "hola2" << std::endl;
         }
 
         //!Extracts the value path from h_pos to the root into the out file
@@ -427,7 +446,7 @@ namespace cdslib {
             size_type mem = 0;
             mem += 8 * sizeof(size_type); //parameters
             mem += sdsl::size_in_bytes(H);
-            mem += sdsl::size_in_bytes(D);
+						mem += D.size_in_bytes();  //sdsl::size_in_bytes(D);
             mem += sdsl::size_in_bytes(alphabet);
             //still missing few things, but should not greatly change the
             // final size for big files

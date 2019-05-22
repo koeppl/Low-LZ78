@@ -52,13 +52,14 @@ namespace cdslib {
         std::string out_file_name;
         size_type number_of_collisions;
         size_type max_length;
+				size_type MAX_RAM;
 
     public:
 
         // Empty constructor
         ghlz78() {
             M = P = alpha = beta = sigma = 0;
-            number_of_phrases = max_h = max_length = 0;
+            number_of_phrases = max_h = max_length = MAX_RAM = 0;
             load_limit = cell_used = 0;
         }
 
@@ -258,12 +259,21 @@ namespace cdslib {
             sdsl::int_vector<> B;
             B.load(in); // load B
             load_vector_selection(H, B, max_h, in);
-
-            //H.load(in);//Load Hash
-            std::cout << "H size: " << H.size() << "  first: " << H[0] << "  last: " << H[H.size() - 1] << std::endl;
+            //std::cout << "H size: " << H.size() << "  first: " << H[0] << "  last: " << H[H.size() - 1] << std::endl;
             D.load(in);//Load D
             alphabet.load(in); //Load map_alphabet
-            delete[] parameters;
+						
+						size_type size_of_struc = 8 * sizeof(size_type); //parameters
+						size_of_struc += sdsl::size_in_bytes(B); //B
+						std::cout << "B: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(H); // H
+						std::cout << "B+H: " << size_of_struc << std::endl;
+						size_of_struc += D.size_in_bytes(); //sdsl::size_in_bytes(D); //D      
+						std::cout << "B+H+D: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(alphabet); //map_alphabet            
+						size_of_struc += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						std::cout << "FINAL: Decompression Ram used approx: " << size_of_struc <<  " bytes" << std::endl;
+						delete[] parameters;
         }
 
     private:
@@ -318,12 +328,20 @@ namespace cdslib {
                     ++count;
                 }
             }
-            size_of_struc = B.serialize(out, child, "bitmap B"); //Save B
-            write_vector_selection(H, B, count, out);
 
-            size_of_struc = D.serialize(out, child, "D Array"); //Save D
-            //std::cout << "D uses: " << size_of_struc << " bytes" << std::endl;
-            alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet
+						size_of_struc += 8 * sizeof(size_type); //parameters
+						size_of_struc += B.serialize(out, child, "bitmap B"); //Save B
+						std::cout << "B: " << size_of_struc << std::endl;
+						size_of_struc += sdsl::size_in_bytes(H); // H
+						std::cout << "B+H: " << size_of_struc << std::endl;
+						write_vector_selection(H, B, count, out);
+						size_of_struc += D.serialize(out, child, "D Array"); //Save D																														
+						std::cout << "B+H+D: " << size_of_struc << std::endl;
+						size_of_struc += alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet																										
+						size_of_struc += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						MAX_RAM = (size_type)std::max(MAX_RAM, size_of_struc);
+						std::cout << "Ram used when storing: " << size_of_struc <<  " bytes" << std::endl;
+						std::cout << "FINAL RAM USAGE: " << MAX_RAM <<  " bytes" << std::endl;																														
             out.seekp(0, std::ios::beg);
             SaveValue(out, start_position);
         }
@@ -443,6 +461,7 @@ namespace cdslib {
             //swap data structures
             size_type ram = size_in_bytes() + new_ds.size_in_bytes();
             std::cout << "RAM USED: " << ram << "  bytes" << std::endl;
+						MAX_RAM = ram;
             this->swap(new_ds);
         }
 
@@ -473,9 +492,10 @@ namespace cdslib {
             size_type mem = 0;
             mem += 8 * sizeof(size_type); //parameters
             mem += sdsl::size_in_bytes(H);
-            mem += sdsl::size_in_bytes(D);
+            mem += D.size_in_bytes();   //sdsl::size_in_bytes(D);
             mem += sdsl::size_in_bytes(alphabet);
-            //still missing few things, but should not greatly change the
+            mem += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						//still missing few things, but should not greatly change the
             // final size for big files
             return mem;
         }

@@ -1,0 +1,23 @@
+1
+Compress
+len file: 4646397473  sigma+2: 56
+M: 915922459  P: 51291657713
+alpha: 1592847885  beta: 25395939455
+max_h : 57  bits_h: 6
+max_d: 10  bits D: 4
+alphabet_size: 54
+number of phrases: 301594140
+number of collisions: 45902501
+Finish storing L at:1130978040
+H uses: 686941857 bytes
+number of special cases: 15497
+Space used by special cases: 247970 bytes
+D uses: 458209219 bytes
+coming back and finish
+862.61
+-rw-rw-r-- 1 rcanovas rcanovas 2276129245 janv.  1 23:46 /home/rcanovas/Desktop/hlz_data/est.fa.hlz78
+Decompress
+max_length: 637
+4622.29
+-rw-rw-r-- 1 rcanovas rcanovas 4646397473 janv.  2 01:04 tmp_file
+ 

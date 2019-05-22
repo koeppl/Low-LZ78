@@ -57,13 +57,14 @@ namespace cdslib {
         size_type MAX_N;  //maximum number of phrases
         size_type bits_D;
         double factor;
+				size_type MAX_RAM;
 
     public:
 
         // Empty constructor
 
-
         mhlz78() {
+					MAX_RAM = 0;
             max_level = 0;
             sigma = 0;
             number_of_phrases = 0;
@@ -171,6 +172,9 @@ namespace cdslib {
             sdsl::read_member(alpha, in);
             sdsl::read_member(total_size_H, in);
             sdsl::read_member(max_level, in);
+						size_type ram_usage = sizeof(size_type)*6; //parameters
+						ram_usage += 2*1048576;  //the 2 buffer used (aprox 2 * 10 mb)
+						size_type last_B = 0;
 
             M = std::vector<size_type>(max_level + 1);
             P = std::vector<size_type>(max_level + 1);
@@ -183,18 +187,24 @@ namespace cdslib {
                 sdsl::read_member(P[i], in);
                 sdsl::read_member(beta[i], in);
                 sdsl::read_member(max_h[i], in);
-                {
+                ram_usage += 4 * sizeof(size_type);
+								{
                     H[i] = new sdsl::int_vector<>();
                     sdsl::int_vector<> B;
                     B.load(in); // load B
                     load_vector_selection((*H[i]), B, max_h[i], in);
+										last_B = sdsl::size_in_bytes(B); //B										
                 }
-                //H[i] = new sdsl::int_vector<>();
-                //H[i]->load(in);
                 D[i] = new D_type();
                 D[i]->load(in);
+
+								ram_usage += sdsl::size_in_bytes(*H[i]); // H[i]
+								ram_usage += (*D[i]).size_in_bytes(); // D[i]      
             }
             alphabet.load(in); //Load map_alphabet
+						ram_usage += sdsl::size_in_bytes(alphabet); //map_alphabet 
+						ram_usage += last_B;
+						std::cout << "FINAL: Decompression Ram used approx: " << ram_usage <<  " bytes" << std::endl;
         }
 
 
@@ -205,7 +215,7 @@ namespace cdslib {
             uint64_t start_position = out.tellp(); //get actual position in the file
             std::cout << "Finish storing L at:" << start_position << std::endl;
             sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(nullptr, "", sdsl::util::class_name(*this));
-            size_type size_of_struc = 0, size_h = 0, size_d = 0;
+            size_type size_of_struc = 0, size_h = 0, size_d = 0, size_b = 0;
             size_of_struc += write_member(number_of_phrases, out, child, "num phrases");
             size_of_struc += write_member(sigma, out, child, "sigma");
             size_of_struc += write_member(bits_L, out, child, "bits L");
@@ -226,16 +236,20 @@ namespace cdslib {
                         ++count;
                     }
                 }
-                size_of_struc += B.serialize(out, child, "bitmap B"); //Save B
-                size_h += write_vector_selection((*H[i]), B, count, out);
-                //size_h += (*H[i]).serialize(out, child, "Hash table");
-                size_d += (*D[i]).serialize(out, child, "D structure");
+                size_b = B.serialize(out, child, "bitmap B"); // keep the size only of the last B
+                write_vector_selection((*H[i]), B, count, out);
+               //NEED TO ADD SPACE USED BY H AND B 
+							  size_h += sdsl::size_in_bytes(*(H[i])); //space used by H
+								size_d += (*(D[i])).serialize(out, child, "D structure");
             }
-            size_of_struc += size_d + size_h;
+            size_of_struc += size_d + size_h + size_b; 
             std::cout << "total length H: " << total_size_H << std::endl;
             std::cout << "H: " << size_h << " bytes" << std::endl;
             std::cout << "D: " << size_d << " bytes" << std::endl;
-            alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet
+            size_of_struc += alphabet.serialize(out, child, "map alphabet"); //Save map_alphabet
+						size_of_struc += 2*1048576;  // buffers used
+						MAX_RAM = size_of_struc;
+						std::cout << "FINAL RAM USAGE: " << MAX_RAM <<  " bytes" << std::endl;
             out.seekp(0,std::ios::beg);
             SaveValue(out, start_position);
         }

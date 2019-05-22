@@ -1,0 +1,55 @@
+1
+Compress
+len file: 296135874  sigma+2: 99
+M: 18928  P: 1873877
+alpha: 214028  beta: 1598672
+max_h : 100  bits_h: 7
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+max_d: 10  bits D: 4
+number of levels: 11
+alphabet_size: 97
+number of phrases: 16205171
+number of collisions: 6795164
+number of levels: 11
+Finish storing L at:54692464
+number of special cases: 1721
+Space used by special cases: 27554 bytes
+number of special cases: 1682
+Space used by special cases: 26930 bytes
+number of special cases: 3511
+Space used by special cases: 56194 bytes
+number of special cases: 6933
+Space used by special cases: 110946 bytes
+number of special cases: 14130
+Space used by special cases: 226098 bytes
+number of special cases: 28184
+Space used by special cases: 450962 bytes
+number of special cases: 55957
+Space used by special cases: 895330 bytes
+number of special cases: 113637
+Space used by special cases: 1818210 bytes
+number of special cases: 226395
+Space used by special cases: 3622338 bytes
+number of special cases: 449509
+Space used by special cases: 7192162 bytes
+number of special cases: 283066
+Space used by special cases: 4529074 bytes
+total length H: 19382272
+H: 19380011 bytes
+D: 28647121 bytes
+total size H: 19382272
+101.16
+-rw-rw-r-- 1 rcanovas rcanovas 102720109 déc.  28 23:24 /home/rcanovas/Desktop/hlz_data/dblp.xml.mhlz78
+Decompress
+42.56
+-rw-rw-r-- 1 rcanovas rcanovas 296135874 déc.  28 23:25 tmp_file
+ 
