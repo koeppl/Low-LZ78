@@ -195,6 +195,8 @@ namespace cdslib {
                      grow_tables(out);
                  return 0; //come back to the root
              }
+			 DCHECK(false);
+			 return 0;
          }
 
 

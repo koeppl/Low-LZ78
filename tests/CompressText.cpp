@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
         cout << "opt: " << endl;
         cout << "-o output_name:  String containing the name of the output file. Default file_name.hlz78" << endl;
         cout << "-s sigma: Size of the alphabet of the input text. Default s = 256" << endl;
-        cout << "-f factor: Integer value indicating the overload factor used  for the Hash table. Default factor = 5%" << endl;
+        cout << "-f factor: Integer value indicating the overload factor used for the used hash table. Default factor = 5 (meaning 5%). The overload factor f determines the maximum load factor 1/f of the used hash table." << endl;
         cout << "-d D_bits: Number of bits used to store each collision value. Default d=0 and compute it internally" << endl;
 				cout << "-g grow: Grow factor used for the hash table. Default g=2.0" <<endl;
         cout << "-w Index_type. Default = 0" << endl;
@@ -59,8 +59,8 @@ int main(int argc, char* argv[]) {
         cout << " 5 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
         cout << " 6 | LZ78 classic construction" << endl;
         cout << " 7 | BHZ78 Brute force growing HLZ78 construction" << endl;
-				cout << " 8 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
-				cout << " 9 | GHLZ78(S)2 using a hash table and a sublayer for displacements and a Sampled node array when growing" << endl;
+				// cout << " 8 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
+				cout << " 8 | GHLZ78(S)2 using a hash table and a sublayer for displacements and a Sampled node array when growing" << endl;
 				return 0;
     }
 
@@ -92,48 +92,58 @@ int main(int argc, char* argv[]) {
     //create index
     switch (w) {
         case 0:
+			if(file == out_file)
             out_file += ".hlz78";
             compress_text<cdslib::hlz78<> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 1:  //using Bonsai hash
+			if(file == out_file)
             out_file += ".hlz78_hash";
             compress_text<cdslib::hlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 2:
+			if(file == out_file)
             out_file += ".mhlz78";
             compress_text<cdslib::mhlz78<> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 3:
+			if(file == out_file)
             out_file += ".mhlz78_hash";
             compress_text<cdslib::mhlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 4:
+			if(file == out_file)
             out_file += ".ghlz78";
             compress_text<cdslib::ghlz78<> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 5:
+			if(file == out_file)
             out_file += ".ghlz78_hash";
             compress_text<cdslib::ghlz78<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 6:
+			if(file == out_file)
             out_file += ".lz78";
             compress_text<cdslib::lz78<8>>(file, out_file, factor, sigma, d_bits, grow_factor);
             break;
         case 7:
-            out_file += ".bhlz78";
-            compress_text<cdslib::bhlz78<8, cdslib::hash_Bonsai>>(file, out_file, factor, sigma, d_bits, grow_factor);
-            break;
-				case 8:
-						out_file += ".ghlz78S2_hash";
-						compress_text<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
-						break;
-				case 9:
-						out_file += ".ghlz78S2_hash";
-						compress_text<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
-						break;
-        default:
-            cout << "index_type must be a value in [0,8]" << endl;
-            break;
+			if(file == out_file)
+			out_file += ".bhlz78";
+			compress_text<cdslib::bhlz78<8, cdslib::hash_Bonsai>>(file, out_file, factor, sigma, d_bits, grow_factor);
+			break;
+		case 8:
+			if(file == out_file)
+			out_file += ".ghlz78S2_hash";
+			compress_text<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
+			break;
+		// case 9:
+		// 	if(file == out_file)
+		// 	out_file += ".ghlz78S2_hash";
+		// 	compress_text<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file, factor, sigma, d_bits, grow_factor);
+		// 	break;
+		default:
+			cout << "index_type must be a value in [0,8]" << endl;
+			break;
     }
 
     return 0;

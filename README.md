@@ -14,6 +14,8 @@ C (32 bits):
 - lz78_uc: The LZ78 uncompressd baseline representation used by Arroyuelo and Navarro.
  
 
+Change in the header file `include/SLZ78/defs.h` the macro `BONSAI_HASH_TABLE` for a different hash table used for storing the displacement information of the used Bonsai hash table.
+
 ## Compile
 
 To be able to compile the codes: 

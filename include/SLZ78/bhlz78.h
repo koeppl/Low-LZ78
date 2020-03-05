@@ -191,6 +191,8 @@ namespace cdslib {
                      restart_structure(out, in);
                  return 0; //come back to the root
              }
+			 DCHECK(false);
+			 return 0;
          }
 
 

@@ -354,6 +354,8 @@ namespace cdslib {
                     return insert(node_value, out, current_index);
                 }
             }
+			DCHECK(false);
+			return 0;
         }
 
         void
