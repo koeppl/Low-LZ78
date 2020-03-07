@@ -5,6 +5,17 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release")
 endif(NOT CMAKE_BUILD_TYPE)
 
+set(USE_MALLOC_COUNT OFF CACHE BOOL "Display the amount of allocated memory! Needs the malloc_count submodule.")
+set(MALLOC_COUNT_SOURCE "")
+set(MALLOC_COUNT_LIBS "")
+
+if(USE_MALLOC_COUNT)
+	include_directories(external/malloc_count)
+	set(MALLOC_COUNT_SOURCE "external/malloc_count/malloc_count.c")
+	set(MALLOC_COUNT_LIBS "-ldl")
+endif(USE_MALLOC_COUNT)
+
+
 set(CXX_STANDARD gnu++17)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -march=native -fdiagnostics-color=auto -std=${CXX_STANDARD} -DPRINT_STATS") # -DMALLOC_DISABLED=1")
@@ -36,5 +47,11 @@ link_libraries(sdsl divsufsort divsufsort64 glog)
 set(SOURCE_FILES tests/CompressText.cpp)
 set(SOURCE_FILES2 tests/DecompressHLZ.cpp)
 
-add_executable(CompressText ${SOURCE_FILES})
-add_executable(DecompressHLZ ${SOURCE_FILES2})
+add_executable(CompressText ${SOURCE_FILES} ${MALLOC_COUNT_SOURCE})
+add_executable(DecompressHLZ ${SOURCE_FILES2} ${MALLOC_COUNT_SOURCE})
+target_link_libraries(CompressText ${MALLOC_COUNT_LIBS})
+target_link_libraries(DecompressHLZ ${MALLOC_COUNT_LIBS})
+
+MESSAGE( STATUS "Built Type: " ${CMAKE_BUILD_TYPE} )
+MESSAGE( STATUS "CXX Flags: " ${CMAKE_CXX_FLAGS} )
+

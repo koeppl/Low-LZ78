@@ -30,11 +30,12 @@ class SeparateChainingTable {
 
     hashtable_type m_table;
 
-    SeparateChainingTable() : m_table(2) {}
+    SeparateChainingTable() {} //dummy
 
-    SeparateChainingTable(size_type M) 
-        : m_table(M)
-    { }
+    SeparateChainingTable(uint_fast8_t key_width, uint_fast8_t value_width) 
+        : m_table(key_width, value_width)
+    { 
+	}
 
     void swap(SeparateChainingTable& o) {
         std::swap(m_table, o.m_table);
@@ -95,6 +96,8 @@ class SeparateChainingTable {
 
     void setValue(size_type key, size_type value) {
         // std::cout << "keywidth " << ((size_t)m_table.key_width()) << std::endl;
+		DCHECK_LE(tdc::bits_for(key), m_table.key_width());
+#if(0)
         if(tdc::bits_for(key) > m_table.key_width()) {
             hashtable_type table(tdc::bits_for(key));
 
@@ -107,6 +110,7 @@ class SeparateChainingTable {
             DCHECK(m_table.empty());
             m_table.swap(table);
         }
+#endif//0
         m_table[key] = value;
         // std::cout << "m_table[" << key << " <- " << value  << ", keywidth = " << ((size_t)m_table.key_width()) << std::endl;
     }
@@ -130,16 +134,17 @@ class BonsaiTable {
 
 	std::string name() const { return std::string(typeid(*this).name()) + std::string(" ") + std::string(typeid(m_table).name()); }
 
-    BonsaiTable() {}
+    BonsaiTable() {} //!dummy
 
-    BonsaiTable(size_type M, size_type N) 
-        : m_table(0, tdc::bits_for(N))
-    { }
+    BonsaiTable(uint_fast8_t key_width, uint_fast8_t value_width) 
+        : m_table(0, key_width, value_width)
+    { 
+	}
 
-    BonsaiTable(size_type M) 
-        : m_table(0, tdc::bits_for(M))
-    { }
-
+    // BonsaiTable(size_type M) 
+    //     : m_table(0, tdc::bits_for(M))
+    // { }
+    //
     void swap(BonsaiTable& o) {
 			std::swap(m_table, o.m_table);
     }
@@ -164,9 +169,12 @@ class BonsaiTable {
     }
 
     void setValue(size_type key, size_type d) {
+		DCHECK_LE(tdc::bits_for(key), m_table.key_width());
+#if(0)
         if(tdc::bits_for(key) > m_table.key_width()) {
 			m_table.grow_key_width(tdc::bits_for(key));
 		}
+#endif//0
 		m_table[key] = d;
     }
     // size_type get_size() const {
@@ -204,17 +212,20 @@ namespace cdslib {
 
         // Empty constructor
         hash_Bonsai() { }
+		
 
-        //t_d_bits must be smaller than 7, but we are only using value 3 
-        hash_Bonsai(size_type M, double factor, size_type t_d_bits) {
-            t_d_bits = 3;
-            max_d = (1 << t_d_bits) - 1;
-            D0 = sdsl::int_vector<>(M, 0, t_d_bits);
+        //t_d_bits = m_key_bits must be smaller than 7, but we are only using value 3 
+		static constexpr size_type m_value_width = 3;
+        hash_Bonsai(size_type M, [[maybe_unused]] double factor, [[maybe_unused]] size_type t_d_bits) 
+			: D4(tdc::bits_for(M), m_value_width)
+		{
+            max_d = (1 << m_value_width) - 1;
+            D0 = sdsl::int_vector<>(M, 0, m_value_width);
 #ifndef NDEBUG
             D1 = hash_D_level(M);
 #endif
-            D4 = hashtable_type(t_d_bits); //TODO: parameter = maximal number of bits a key can have. Is this t_d_bits??
-			std::cout << "[Bonsai]: create table with bits = " << t_d_bits << std::endl;
+            // D4 = hashtable_type(M, m_value_width); //TODO: parameter = maximal number of bits a key can have. Is this m_value_width??
+			std::cout << "[Bonsai]: create table with key_width = " << ((size_t)tdc::bits_for(M)) << " and value_width = " << ((size_t)m_value_width) << std::endl;
 			std::cout << "[Bonsai]: table = " << D4.name() << std::endl;
         }
 
@@ -343,10 +354,11 @@ namespace cdslib {
                 if (d > 134) //from the original implementation (7 bits for this level)
                     mapSl[pos] = d;
                 else {
+                    D4.setValue(pos, d - max_d);
 #ifndef NDEBUG 
                     D1.setValue(pos, d - max_d);
+					DCHECK_EQ(D1.getValue(pos), D4.getValue(pos));
 #endif
-                    D4.setValue(pos, d - max_d);
                 }
             }
         }
