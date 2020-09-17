@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
         cout << " 5 | GHLZ78 using a hash table and a sublayer for displacements" << endl;
         cout << " 7 | BHLZ78 brute force hlz78 growing version" << endl;
 				cout << " 8 | GHLZ78(S) using a hash table and a sublayer for displacements and a sampled node array when growing" << endl;
-				cout << " 9 | GHLZ78(S)2 using a hash table and a sublayer for displacements and a sampled node array when growing" << endl;
+			cout << " 9 | GHLZ78 using a hash table and a sampled node array when growing" << endl;
         return 0;
     }
 
@@ -108,10 +108,10 @@ int main(int argc, char* argv[]) {
 						decompress<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file);
 						break;
 				case 9:
-						decompress<cdslib::ghlz78S2<8, cdslib::hash_Bonsai> >(file, out_file);
+						decompress<cdslib::ghlz78S2<8> >(file, out_file);
 						break;
         default:
-            cout << "index_type must be a value in [0,5]" << endl;
+            cout << "index_type must be a value in [0,8] but not 6" << endl;
             break;
     }
 

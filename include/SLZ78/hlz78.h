@@ -57,9 +57,10 @@ namespace cdslib {
 
         //! Compress file_name into out_file
         //  s : size of the alphabet
+		//  hack: if _gf is not 2, then _gf is the upper limit of factors we can store
         void
         compress_file(std::string file_name, std::string out_file, size_type s,
-                      double factor = 0.05, size_type bits_d = 0, double _gf = 2.0) {
+                      double factor = 0.05, size_type bits_d = 0, size_t _gf = 2) {
             size_type len_file = 0;
             size_type n = 0, bits_H = 0;
             std::ofstream f_out(out_file);
@@ -74,9 +75,15 @@ namespace cdslib {
             //initialize H and D, and variables P,M,alpha,beta, and sigma
             sigma = s + 2; //+1 to include the symbol of the root and +1 so it is always bigger
             n = (size_type)std::ceil(len_file / (std::log(1.0 * len_file)/std::log(1.0 * s)));
+			std::cout << "guessing upper bound on number of factors: " << n << std::endl;
+			if(_gf != 2) {
+				n = _gf;
+				std::cout << "setting upper bound on number of factors to: " << n << std::endl;
+			}
             M = (1 + factor) * n;
             P = nearest_prime(M * sigma);
             std::cout << "Length file: " << len_file << std::endl <<"Sigma: " << s << std::endl;
+			std::cout << "len file: " << len_file << "  sigma+2: " << sigma << std::endl;
             std::cout << "M: " << M << "  P: " << P << std::endl;
             srand (time(NULL)); // initialize random seed
             alpha = rand() % (P - 1) + 1; //random number in [1, P-1]
@@ -196,7 +203,7 @@ namespace cdslib {
                     ++count;
                 }
             }
-						size_of_struc +=  sdsl::size_in_bytes(H); //space used by H
+			size_of_struc +=  sdsl::size_in_bytes(H); //space used by H
             size_of_struc += B.serialize(out, child, "bitmap B"); //Save B
             write_vector_selection(H, B, count, out); // Save values of H
             size_of_struc += D.serialize(out, child, "D Array"); //Save D            

@@ -11,7 +11,7 @@ logFile=$1
 replacements=(
 '^alphabet_size:\s\+\([0-9]\+\)' 'sigma'
 '^number of phrases:\s\+\([0-9]\+\)' 'z'
-'^Length file:\s\+\([0-9]\+\)' 'n'
+'^len file:\s\+\([0-9]\+\)' 'readn'
 '^malloc_count ### exiting.* peak: \([0-9.,]\+\),.*' 'mem'
 '^Wall Time:\s\+\([0-9]\+\)' 'time'
 )

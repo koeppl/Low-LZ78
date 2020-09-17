@@ -6,6 +6,7 @@
 #define CDSLIB_MAP_D_H
 
 #include "./../tools.h"
+#include <sdsl/coder_elias_gamma.hpp>
 
 namespace cdslib {
 
@@ -61,7 +62,26 @@ namespace cdslib {
             sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(v, name, sdsl::util::class_name(*this));
             size_type written_bytes = 0, e_bytes = 0;
             written_bytes += write_member(max_d, out, child, "maximum value in D");
-            written_bytes += D.serialize(out, child, "D array");
+            // written_bytes += D.serialize(out, child, "D array");
+			{
+				sdsl::int_vector<> prepD = D;
+				for(size_t it = 0; it < prepD.size(); ++it) {
+					++prepD[it];
+				}
+				sdsl::int_vector<> serD;
+				sdsl::coder::elias_gamma::encode(prepD, serD);
+				const size_t written_b = serD.serialize(out, child, "D array");
+				written_bytes += written_b;
+				std::cout << "size of fixed bit width D array: " << sdsl::size_in_bytes(D) << std::endl;
+				std::cout << "size of gamma compressed fixed bit width D array: " << sdsl::size_in_bytes(serD) << std::endl;
+				std::cout << "bytes for serialization of gamma compressed D array: " << written_bytes << std::endl;
+				size_t zeros = 0;
+				for(size_t it = 0; it < D.size(); ++it) {
+					if(D[it] == 0) ++zeros;
+				}
+				std::cout << "zeros in D: " << zeros << " faction: " << (zeros*100/D.size()) << std::endl;
+			}
+
             {//Save E
                 size_type length_E = E.size(), cont = 0;
                 std::cout << "number of special cases: " << length_E << std::endl;
@@ -87,7 +107,15 @@ namespace cdslib {
         void
         load(std::istream& in) {
             sdsl::read_member(max_d, in);
-            D.load(in);
+            //D.load(in);
+			{
+				sdsl::int_vector<> serD;
+				serD.load(in);
+				sdsl::coder::elias_gamma::decode(serD, D);
+				for(size_t it = 0; it < D.size(); ++it) {
+					--D[it];
+				}
+			}
             sdsl::int_vector<> keys;
             sdsl::int_vector<> values;
             keys.load(in);

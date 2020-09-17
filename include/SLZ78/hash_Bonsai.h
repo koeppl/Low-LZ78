@@ -139,6 +139,7 @@ class BonsaiTable {
     BonsaiTable(uint_fast8_t key_width, uint_fast8_t value_width) 
         : m_table(0, key_width, value_width)
     { 
+		m_table.max_load_factor(0.95);
 	}
 
     // BonsaiTable(size_type M) 
@@ -215,17 +216,19 @@ namespace cdslib {
 		
 
         //t_d_bits = m_key_bits must be smaller than 7, but we are only using value 3 
-		static constexpr size_type m_value_width = 3;
+		static constexpr size_type m_value_width_first = 3;
+		static constexpr size_type m_value_width_second = 7;
+		static constexpr size_type m_upper_limit = (1ULL<<m_value_width_first)-1 + (1ULL<<m_value_width_second)-1; // the maximum value we can store in D0 and D4
         hash_Bonsai(size_type M, [[maybe_unused]] double factor, [[maybe_unused]] size_type t_d_bits) 
-			: D4(tdc::bits_for(M), m_value_width)
+			: D4(tdc::bits_for(M), m_value_width_second)
 		{
-            max_d = (1 << m_value_width) - 1;
-            D0 = sdsl::int_vector<>(M, 0, m_value_width);
+            max_d = (1 << m_value_width_first) - 1;
+            D0 = sdsl::int_vector<>(M, 0, m_value_width_first);
 #ifndef NDEBUG
             D1 = hash_D_level(M);
 #endif
-            // D4 = hashtable_type(M, m_value_width); //TODO: parameter = maximal number of bits a key can have. Is this m_value_width??
-			std::cout << "[Bonsai]: create table with key_width = " << ((size_t)tdc::bits_for(M)) << " and value_width = " << ((size_t)m_value_width) << std::endl;
+            // D4 = hashtable_type(M, m_value_width_first); //TODO: parameter = maximal number of bits a key can have. Is this m_value_width_first??
+			std::cout << "[Bonsai]: create table with key_width = " << ((size_t)tdc::bits_for(M)) << " and value_width = " << ((size_t)m_value_width_first) << std::endl;
 			std::cout << "[Bonsai]: table = " << D4.name() << std::endl;
         }
 
@@ -262,7 +265,25 @@ namespace cdslib {
             sdsl::structure_tree_node* child = sdsl::structure_tree::add_child(v, name, sdsl::util::class_name(*this));
             size_type written_bytes = 0, e_bytes = 0;
             written_bytes += write_member(max_d, out, child, "maximum value in D");
-            written_bytes += D0.serialize(out, child, "D array");
+            // written_bytes += D0.serialize(out, child, "D array");
+			{
+				sdsl::int_vector<> prepD = D0;
+				for(size_t it = 0; it < prepD.size(); ++it) {
+					++prepD[it];
+				}
+				sdsl::int_vector<> serD;
+				sdsl::coder::elias_gamma::encode(prepD, serD);
+				const size_t written_b = serD.serialize(out, child, "D0 array");
+				written_bytes += written_b;
+				std::cout << "size of fixed bit width D0 array: " << sdsl::size_in_bytes(D0) << std::endl;
+				std::cout << "size of gamma compressed fixed bit width D0 array: " << sdsl::size_in_bytes(serD) << std::endl;
+				std::cout << "bytes for serialization of gamma compressed D0 array: " << written_bytes << std::endl;
+				size_t zeros = 0;
+				for(size_t it = 0; it < D0.size(); ++it) {
+					if(D0[it] == 0) ++zeros;
+				}
+				std::cout << "zeros in D0: " << zeros << " faction: " << (zeros*100/D0.size()) << std::endl;
+			}
 #ifndef NDEBUG
             e_bytes += D1.serialize(out, child, "D1 array");
 #endif
@@ -300,7 +321,15 @@ namespace cdslib {
 			std::cout << "[Bonsai]: deserializing" << std::endl;
 			std::cout << "[Bonsai]: table = " << typeid(D4).name() << std::endl;
             sdsl::read_member(max_d, in);
-            D0.load(in);
+            // D0.load(in);
+			{
+				sdsl::int_vector<> serD;
+				serD.load(in);
+				sdsl::coder::elias_gamma::decode(serD, D0);
+				for(size_t it = 0; it < D0.size(); ++it) {
+					--D0[it];
+				}
+			}
 #ifndef NDEBUG
             D1.load(in);
 #endif
@@ -343,7 +372,7 @@ namespace cdslib {
                     cdslib::hash_D_level D2 = hash_D_level(D_size, 2 * D1.get_size());
                     for (size_type i = 0; i < D_size; ++i) {
                         d_value  = getValue(i);
-                        if (d_value >= max_d and d_value <= 134) {
+                        if (d_value >= max_d and d_value <= m_upper_limit) {
                             D2.setValue(i, d_value - max_d);
                         }
                     }
@@ -351,9 +380,10 @@ namespace cdslib {
                 }
 #endif
                 D0[pos] = max_d;
-                if (d > 134) //from the original implementation (7 bits for this level)
+                if (d > m_upper_limit) //from the original implementation (7 bits for this level)
                     mapSl[pos] = d;
                 else {
+					DCHECK_LE(tdc::bits_for(d - max_d), m_value_width_second);
                     D4.setValue(pos, d - max_d);
 #ifndef NDEBUG 
                     D1.setValue(pos, d - max_d);
